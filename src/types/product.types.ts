@@ -7,6 +7,7 @@ export interface Product {
   price: number;
   stock: number;
   image: string | null;
+  type: string;
   categoryId: string;
   category: { id: string; name: string };
   createdAt: string;
@@ -22,6 +23,7 @@ export interface CreateProductPayload {
   price: number;
   stock: number;
   image?: string;
+  type?: string;
   categoryId: string;
 }
 

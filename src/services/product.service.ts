@@ -2,7 +2,7 @@ import api from './api';
 import { Product, PaginatedResponse, CreateProductPayload } from '@/types/product.types';
 
 export const productService = {
-  async getAll(params?: { page?: number; limit?: number; search?: string; categoryId?: string }) {
+  async getAll(params?: { page?: number; limit?: number; search?: string; categoryId?: string; type?: string }) {
     const { data } = await api.get<PaginatedResponse<Product>>('/products', { params });
     return data;
   },

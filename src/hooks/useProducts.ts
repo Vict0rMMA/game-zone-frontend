@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Product, PaginationMeta } from '@/types/product.types';
 import { productService } from '@/services/product.service';
 
-export function useProducts(filters?: { search?: string; categoryId?: string }) {
+export function useProducts(filters?: { search?: string; categoryId?: string; type?: string }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [meta, setMeta] = useState<PaginationMeta | null>(null);
   const [page, setPage] = useState(1);
@@ -23,7 +23,7 @@ export function useProducts(filters?: { search?: string; categoryId?: string }) 
     } finally {
       setLoading(false);
     }
-  }, [filters?.search, filters?.categoryId]);
+  }, [filters?.search, filters?.categoryId, filters?.type]);
 
   useEffect(() => { fetch(1); }, [fetch]);
 
