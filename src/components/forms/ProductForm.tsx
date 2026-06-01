@@ -22,6 +22,7 @@ export default function ProductForm({ initial, onSubmit, submitLabel = 'Guardar'
     description: initial?.description ?? '',
     price: initial?.price ?? 0,
     stock: initial?.stock ?? 0,
+    image: initial?.image ?? '',
     categoryId: initial?.categoryId ?? '',
   });
 
@@ -52,6 +53,12 @@ export default function ProductForm({ initial, onSubmit, submitLabel = 'Guardar'
         <label className="text-xs font-bold uppercase tracking-wider" style={labelStyle}>Título del juego *</label>
         <input value={form.name} onChange={e => set('name', e.target.value)} placeholder="Ej: Elden Ring, GTA V..." className={fieldClass} style={{ ...inputStyle, border: `1px solid ${errors.name ? 'var(--danger)' : 'var(--border)'}` }} />
         {errors.name && <p className="text-xs" style={errorStyle}>{errors.name}</p>}
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <label className="text-xs font-bold uppercase tracking-wider" style={labelStyle}>URL de imagen (opcional)</label>
+        <input value={form.image ?? ''} onChange={e => set('image', e.target.value)}
+          placeholder="https://..." className={fieldClass} style={inputStyle} />
       </div>
 
       <div className="flex flex-col gap-1.5">

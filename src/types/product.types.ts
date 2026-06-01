@@ -6,6 +6,7 @@ export interface Product {
   description: string | null;
   price: number;
   stock: number;
+  image: string | null;
   categoryId: string;
   category: { id: string; name: string };
   createdAt: string;
@@ -20,6 +21,7 @@ export interface CreateProductPayload {
   description?: string;
   price: number;
   stock: number;
+  image?: string;
   categoryId: string;
 }
 
