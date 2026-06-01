@@ -40,13 +40,13 @@ export default function EditProductPage() {
   return (
     <div className="max-w-lg">
       <div className="flex items-center gap-3 mb-6">
-        <Link href="/products" className="text-gray-400 hover:text-gray-600">←</Link>
-        <h1 className="text-2xl font-bold">Editar Producto</h1>
+        <Link href="/products" style={{ color: 'var(--muted)' }} className="text-lg">←</Link>
+        <h1 className="text-2xl font-black uppercase tracking-wider">Editar juego</h1>
       </div>
-      <div className="bg-white rounded-xl shadow-sm border p-6">
+      <div className="rounded-2xl p-6" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
         {product && (
           <ProductForm
-            initial={{ name: product.name, description: product.description ?? '', price: product.price, stock: product.stock, categoryId: product.categoryId }}
+            initial={{ name: product.name, description: product.description ?? '', price: product.price, stock: product.stock, image: product.image ?? '', categoryId: product.categoryId }}
             onSubmit={handleSubmit}
             submitLabel="Guardar cambios"
           />

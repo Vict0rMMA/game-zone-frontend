@@ -27,28 +27,28 @@ export default function AdminPage() {
       <p className="text-gray-500 mb-6 text-sm">Vista exclusiva para administradores.</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div className="bg-indigo-600 text-white rounded-xl p-6 shadow">
-          <div className="text-sm opacity-75 mb-1">Usuario actual</div>
-          <div className="text-xl font-bold">{user?.name}</div>
-          <div className="text-sm opacity-75 mt-1">{user?.email}</div>
-          <span className="mt-2 inline-block bg-white/20 text-xs px-2 py-0.5 rounded-full">{user?.role}</span>
+        <div className="rounded-xl p-6" style={{ background: 'rgba(0,230,118,0.06)', border: '1px solid rgba(0,230,118,0.2)' }}>
+          <div className="text-xs uppercase tracking-wider mb-1" style={{ color: 'var(--muted)' }}>Usuario actual</div>
+          <div className="text-xl font-black" style={{ color: 'var(--text)' }}>{user?.name}</div>
+          <div className="text-sm mt-1" style={{ color: 'var(--muted)' }}>{user?.email}</div>
+          <span className="mt-2 inline-block text-xs px-2 py-0.5 rounded-full font-bold" style={{ background: 'rgba(0,230,118,0.15)', color: 'var(--accent)', border: '1px solid rgba(0,230,118,0.25)' }}>{user?.role}</span>
         </div>
-        <div className="bg-white rounded-xl p-6 shadow-sm border">
-          <div className="text-sm text-gray-500 mb-1">Acceso</div>
-          <div className="text-xl font-bold text-green-600">✓ Administrador</div>
-          <p className="text-xs text-gray-400 mt-2">Puedes crear, editar y eliminar productos y categorías.</p>
+        <div className="rounded-xl p-6" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+          <div className="text-xs uppercase tracking-wider mb-1" style={{ color: 'var(--muted)' }}>Acceso</div>
+          <div className="text-xl font-black" style={{ color: 'var(--accent)' }}>✓ Administrador</div>
+          <p className="text-xs mt-2" style={{ color: 'var(--muted)' }}>Puedes crear, editar y eliminar productos y categorías.</p>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border p-6">
-        <h2 className="font-semibold mb-4">Información del sistema</h2>
+      <div className="rounded-xl p-6" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+        <h2 className="font-bold uppercase tracking-wider text-sm mb-4" style={{ color: 'var(--muted)' }}>Información del sistema</h2>
         <div className="grid grid-cols-2 gap-3 text-sm">
-          <div className="text-gray-500">Versión</div><div>1.0.0</div>
-          <div className="text-gray-500">Backend</div><div>Node.js + Express + TypeScript</div>
-          <div className="text-gray-500">Frontend</div><div>Next.js 14 + TypeScript</div>
-          <div className="text-gray-500">Base de datos</div><div>PostgreSQL + Prisma ORM</div>
-          <div className="text-gray-500">Autenticación</div><div>JWT + bcrypt</div>
-          <div className="text-gray-500">Arquitectura</div><div>Clean Architecture</div>
+          <div style={{ color: 'var(--muted)' }}>Versión</div><div>1.0.0</div>
+          <div style={{ color: 'var(--muted)' }}>Backend</div><div>Node.js + Express + TypeScript</div>
+          <div style={{ color: 'var(--muted)' }}>Frontend</div><div>Next.js 14 + TypeScript</div>
+          <div style={{ color: 'var(--muted)' }}>Base de datos</div><div>PostgreSQL + Prisma ORM</div>
+          <div style={{ color: 'var(--muted)' }}>Autenticación</div><div>JWT + bcrypt</div>
+          <div style={{ color: 'var(--muted)' }}>Arquitectura</div><div>Clean Architecture</div>
         </div>
       </div>
     </div>
