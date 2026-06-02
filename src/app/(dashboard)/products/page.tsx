@@ -280,44 +280,68 @@ function GameCard({ product: p, isAdmin, onDelete }: { product: Product; isAdmin
       </div>
 
       {/* Info */}
-      <div style={{ padding:'0.8rem 0.85rem 0.75rem', flex:1, display:'flex', flexDirection:'column', gap:'0.3rem' }}>
-        <p style={{ fontWeight:700, fontSize:'0.9rem', lineHeight:1.3, color:'var(--text)', margin:0,
+      <div style={{ padding:'1rem 1rem 1rem', flex:1, display:'flex', flexDirection:'column' }}>
+
+        {/* Nombre */}
+        <p style={{ fontWeight:700, fontSize:'0.92rem', lineHeight:1.35, color:'var(--text)', margin:'0 0 0.3rem',
           display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical', overflow:'hidden' }}>
           {p.name}
         </p>
-        <p style={{ fontSize:'0.68rem', color:'var(--muted)', margin:0 }}>{platform}</p>
+
+        {/* Plataforma */}
+        <p style={{ fontSize:'0.68rem', color:'var(--muted)', margin:'0 0 0.4rem' }}>{platform}</p>
+
+        {/* Estrellas */}
         <Stars v={rating} />
 
-        <div style={{ marginTop:'auto', paddingTop:'0.5rem' }}>
-          <p style={{ fontWeight:700, fontSize:'1rem', margin:'0 0 0.5rem',
-            color: isFree ? 'var(--text)' : 'var(--text)' }}>
-            {isFree ? 'Gratis' : `$${price.toLocaleString('es-CO')}`}
-          </p>
+        {/* Precio */}
+        <p style={{ fontWeight:800, fontSize:'1.05rem', margin:'0.75rem 0 0',
+          color:'var(--text)', letterSpacing:'-0.01em' }}>
+          {isFree
+            ? <span style={{ color:'var(--accent)' }}>Gratis</span>
+            : `$${price.toLocaleString('es-CO')}`}
+        </p>
 
-          <div style={{ display:'flex', gap:'0.4rem' }}>
-            <button style={{
-              flex:1, padding:'0.55rem 0.5rem', borderRadius:'8px', border:'none', cursor:'pointer',
-              background:'#3b82f6', color:'#fff', fontWeight:700, fontSize:'0.78rem',
-              fontFamily:'var(--font-body)', transition:'background 0.15s',
+        {/* Separador */}
+        <div style={{ height:'1px', background:'var(--border)', margin:'0.75rem 0' }} />
+
+        {/* Botones */}
+        <div style={{ display:'flex', gap:'0.45rem', alignItems:'center' }}>
+          <button
+            onClick={() => toast.success(`${p.name} añadido al carrito`)}
+            style={{
+              flex:1, padding:'0.6rem 0.5rem', borderRadius:'9px', border:'none', cursor:'pointer',
+              background:'#3b82f6', color:'#fff', fontWeight:700, fontSize:'0.8rem',
+              fontFamily:'var(--font-body)', transition:'background 0.15s', letterSpacing:'0.01em',
             }}
-              onMouseEnter={e => (e.target as HTMLButtonElement).style.background='#2563eb'}
-              onMouseLeave={e => (e.target as HTMLButtonElement).style.background='#3b82f6'}
-              onClick={() => toast.success(`${p.name} añadido al carrito`)}>
-              + Carrito
-            </button>
-            <Link href={`/products/${p.id}`} style={{
-              display:'flex', alignItems:'center', justifyContent:'center',
-              width:'34px', borderRadius:'8px', textDecoration:'none',
-              background:'var(--surface2)', color:'var(--muted)',
-              border:'1px solid var(--border)', fontSize:'0.8rem', flexShrink:0,
-            }}>↗</Link>
-            {isAdmin && (
-              <>
-                <Link href={`/products/${p.id}/edit`} style={{ display:'flex', alignItems:'center', justifyContent:'center', width:'34px', borderRadius:'8px', textDecoration:'none', background:'var(--surface2)', color:'var(--muted)', border:'1px solid var(--border)', fontSize:'0.75rem', flexShrink:0 }}>✏</Link>
-                <button onClick={onDelete} style={{ display:'flex', alignItems:'center', justifyContent:'center', width:'34px', borderRadius:'8px', border:'1px solid rgba(255,23,68,0.2)', background:'rgba(255,23,68,0.06)', color:'#ff6b8a', cursor:'pointer', fontSize:'0.75rem', flexShrink:0 }}>✕</button>
-              </>
-            )}
-          </div>
+            onMouseEnter={e => (e.target as HTMLButtonElement).style.background='#2563eb'}
+            onMouseLeave={e => (e.target as HTMLButtonElement).style.background='#3b82f6'}>
+            + Carrito
+          </button>
+
+          <Link href={`/products/${p.id}`} title="Ver detalle" style={{
+            display:'flex', alignItems:'center', justifyContent:'center',
+            width:'36px', height:'36px', borderRadius:'9px', textDecoration:'none', flexShrink:0,
+            background:'var(--surface2)', color:'var(--muted)', border:'1px solid var(--border)',
+            fontSize:'0.85rem',
+          }}>↗</Link>
+
+          {isAdmin && (
+            <>
+              <Link href={`/products/${p.id}/edit`} title="Editar" style={{
+                display:'flex', alignItems:'center', justifyContent:'center',
+                width:'36px', height:'36px', borderRadius:'9px', textDecoration:'none', flexShrink:0,
+                background:'var(--surface2)', color:'var(--muted)', border:'1px solid var(--border)',
+                fontSize:'0.78rem',
+              }}>✏</Link>
+              <button onClick={onDelete} title="Eliminar" style={{
+                display:'flex', alignItems:'center', justifyContent:'center',
+                width:'36px', height:'36px', borderRadius:'9px', flexShrink:0, cursor:'pointer',
+                background:'rgba(255,23,68,0.06)', color:'#ff6b8a',
+                border:'1px solid rgba(255,23,68,0.22)', fontSize:'0.78rem',
+              }}>✕</button>
+            </>
+          )}
         </div>
       </div>
     </div>
