@@ -3,6 +3,40 @@ import { useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
+// ── Logo SVGs reales ───────────────────────────────────────────────────────
+function NequiLogo({ size = 38 }: { size?: number }) {
+  return (
+    <svg width={size} height={size * 0.82} viewBox="0 0 46 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Teal shape — back-left */}
+      <rect x="1" y="5" width="26" height="26" rx="7"
+        fill="#00C4B4"
+        transform="rotate(-22 14 18)" />
+      {/* Pink/magenta shape — back-right */}
+      <rect x="19" y="5" width="26" height="26" rx="7"
+        fill="#E91E8C"
+        transform="rotate(22 32 18)" />
+      {/* Dark navy shape — front-center */}
+      <rect x="10" y="2" width="26" height="26" rx="7"
+        fill="#1B1464"
+        transform="rotate(0 23 15)" />
+    </svg>
+  );
+}
+
+function BancolombiaoLogo({ size = 42 }: { size?: number }) {
+  const h = size * 0.7;
+  return (
+    <svg width={size} height={h} viewBox="0 0 60 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Blue stripe */}
+      <path d="M3 4 Q30 -1 57 7 L55 17 Q28 9 3 14 Z" fill="#003DA5" />
+      {/* Yellow stripe */}
+      <path d="M3 17 Q30 10 57 18 L55 28 Q28 20 3 25 Z" fill="#F5C400" />
+      {/* Red stripe */}
+      <path d="M3 28 Q30 22 57 30 L55 40 Q28 32 3 37 Z" fill="#E31837" />
+    </svg>
+  );
+}
+
 const FALLBACK = 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=460&auto=format&fit=crop';
 
 const inp = (err: boolean): React.CSSProperties => ({
@@ -119,20 +153,22 @@ function CheckoutContent() {
           <div style={{ borderRadius: '16px', padding: '1.25rem', background: 'var(--surface)', border: '1px solid var(--border)' }}>
             <p style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--muted)', marginBottom: '1rem' }}>Método de pago</p>
             <div style={{ display: 'flex', gap: '0.6rem' }}>
-              {methodBtn('card', 'Tarjeta',
-                <div style={{ display: 'flex', gap: '3px' }}>
-                  {['#1A1F71','#F7B600'].map((c,i) => <div key={i} style={{ width: 20, height: 14, borderRadius: 3, background: c, opacity: i===1?0.9:1 }} />)}
+              {methodBtn('card', 'Tarjeta débito/crédito',
+                <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                  <div style={{ width: 28, height: 18, borderRadius: 4, background: '#1A1F71', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <span style={{ color: '#fff', fontSize: '0.55rem', fontWeight: 900, fontStyle: 'italic' }}>VISA</span>
+                  </div>
+                  <div style={{ width: 24, height: 18, borderRadius: 4, overflow: 'hidden', display: 'flex' }}>
+                    <div style={{ flex: 1, background: '#EB001B' }} />
+                    <div style={{ flex: 1, background: '#F79E1B' }} />
+                  </div>
                 </div>
               )}
               {methodBtn('nequi', 'Nequi',
-                <div style={{ width: 36, height: 20, borderRadius: 4, background: '#6C1BC6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ color: '#fff', fontSize: '0.6rem', fontWeight: 800, letterSpacing: '0.02em' }}>NEQUI</span>
-                </div>
+                <NequiLogo size={38} />
               )}
               {methodBtn('bancolombia', 'Bancolombia',
-                <div style={{ width: 36, height: 20, borderRadius: 4, background: '#FDDA24', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ color: '#002C76', fontSize: '0.45rem', fontWeight: 900, textAlign: 'center', lineHeight: 1 }}>BANCO COLOMBIA</span>
-                </div>
+                <BancolombiaoLogo size={42} />
               )}
             </div>
           </div>
@@ -187,8 +223,8 @@ function CheckoutContent() {
           {(method === 'nequi' || method === 'bancolombia') && (
             <div style={{ borderRadius: '16px', padding: '1.25rem', background: 'var(--surface)', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', borderRadius: '10px', background: method === 'nequi' ? 'rgba(108,27,198,0.08)' : 'rgba(0,44,118,0.08)', border: `1px solid ${method === 'nequi' ? 'rgba(108,27,198,0.25)' : 'rgba(0,44,118,0.25)'}` }}>
-                <div style={{ width: 48, height: 28, borderRadius: 6, background: method === 'nequi' ? '#6C1BC6' : '#FDDA24', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <span style={{ color: method === 'nequi' ? '#fff' : '#002C76', fontSize: '0.55rem', fontWeight: 900 }}>{method === 'nequi' ? 'NEQUI' : 'BANCO COLOMBIA'}</span>
+                <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>
+                  {method === 'nequi' ? <NequiLogo size={42} /> : <BancolombiaoLogo size={48} />}
                 </div>
                 <div>
                   <p style={{ fontSize: '0.82rem', fontWeight: 600, marginBottom: '0.1rem' }}>{method === 'nequi' ? 'Pago con Nequi' : 'PSE — Bancolombia'}</p>
@@ -247,13 +283,29 @@ function CheckoutContent() {
 
           {/* Payment logos */}
           <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid var(--border)' }}>
-            <p style={{ fontSize: '0.62rem', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.6rem' }}>Métodos aceptados</p>
-            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', alignItems: 'center' }}>
-              <div style={{ padding: '0.25rem 0.6rem', borderRadius: '5px', background: '#1A1F71', color: '#fff', fontSize: '0.58rem', fontWeight: 800 }}>VISA</div>
-              <div style={{ padding: '0.25rem 0.5rem', borderRadius: '5px', background: '#EB001B', color: '#fff', fontSize: '0.58rem', fontWeight: 800 }}>MC</div>
-              <div style={{ padding: '0.25rem 0.5rem', borderRadius: '5px', background: '#6C1BC6', color: '#fff', fontSize: '0.58rem', fontWeight: 800 }}>NEQUI</div>
-              <div style={{ padding: '0.25rem 0.5rem', borderRadius: '5px', background: '#FDDA24', color: '#002C76', fontSize: '0.55rem', fontWeight: 900 }}>PSE</div>
-              <div style={{ padding: '0.25rem 0.5rem', borderRadius: '5px', background: '#007BC1', color: '#fff', fontSize: '0.58rem', fontWeight: 800 }}>AMEX</div>
+            <p style={{ fontSize: '0.62rem', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.75rem' }}>Métodos aceptados</p>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+              {/* VISA */}
+              <div style={{ padding: '0.3rem 0.65rem', borderRadius: '6px', background: '#1A1F71', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 28 }}>
+                <span style={{ color: '#fff', fontSize: '0.65rem', fontWeight: 900, fontStyle: 'italic', letterSpacing: '0.05em' }}>VISA</span>
+              </div>
+              {/* Mastercard */}
+              <div style={{ borderRadius: '6px', overflow: 'hidden', display: 'flex', height: 28, width: 44 }}>
+                <div style={{ flex: 1, background: '#EB001B' }} />
+                <div style={{ flex: 1, background: '#F79E1B' }} />
+              </div>
+              {/* Nequi logo */}
+              <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '6px', padding: '2px 6px', height: 28, display: 'flex', alignItems: 'center' }}>
+                <NequiLogo size={30} />
+              </div>
+              {/* Bancolombia logo */}
+              <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '6px', padding: '3px 6px', height: 28, display: 'flex', alignItems: 'center' }}>
+                <BancolombiaoLogo size={36} />
+              </div>
+              {/* AMEX */}
+              <div style={{ padding: '0.3rem 0.55rem', borderRadius: '6px', background: '#007BC1', display: 'flex', alignItems: 'center', height: 28 }}>
+                <span style={{ color: '#fff', fontSize: '0.58rem', fontWeight: 800 }}>AMEX</span>
+              </div>
             </div>
           </div>
         </div>
