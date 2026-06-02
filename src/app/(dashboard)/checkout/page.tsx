@@ -1,32 +1,43 @@
 'use client';
-import { useState, useEffect, Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 const FALLBACK = 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=460&auto=format&fit=crop';
 
+const inp = (err: boolean): React.CSSProperties => ({
+  width: '100%', padding: '0.85rem 1rem', borderRadius: '10px', fontSize: '0.88rem',
+  background: 'var(--surface2)', color: 'var(--text)', outline: 'none',
+  border: `1px solid ${err ? 'rgba(255,23,68,0.5)' : 'rgba(255,255,255,0.1)'}`,
+  fontFamily: 'var(--font-body)',
+});
+
 function CheckoutContent() {
   const params = useSearchParams();
   const router = useRouter();
-  const name  = params.get('name') ?? 'Juego';
+  const name  = params.get('name')  ?? 'Juego';
   const price = Number(params.get('price') ?? 0);
   const image = params.get('image') ?? '';
 
-  const [step, setStep] = useState<'form' | 'processing' | 'success'>('form');
-  const [form, setForm] = useState({ card: '', expiry: '', cvv: '', holder: '' });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [step,    setStep]    = useState<'form' | 'processing' | 'success'>('form');
+  const [method,  setMethod]  = useState<'card' | 'nequi' | 'bancolombia'>('card');
+  const [form,    setForm]    = useState({ card: '', expiry: '', cvv: '', holder: '', phone: '' });
+  const [errors,  setErrors]  = useState<Record<string, string>>({});
 
   const set = (k: string, v: string) => setForm(p => ({ ...p, [k]: v }));
-
-  const formatCard = (v: string) => v.replace(/\D/g, '').slice(0, 16).replace(/(.{4})/g, '$1 ').trim();
-  const formatExpiry = (v: string) => { const d = v.replace(/\D/g, '').slice(0, 4); return d.length > 2 ? `${d.slice(0, 2)}/${d.slice(2)}` : d; };
+  const fmtCard   = (v: string) => v.replace(/\D/g,'').slice(0,16).replace(/(.{4})/g,'$1 ').trim();
+  const fmtExpiry = (v: string) => { const d = v.replace(/\D/g,'').slice(0,4); return d.length>2?`${d.slice(0,2)}/${d.slice(2)}`:d; };
 
   const validate = () => {
-    const e: Record<string, string> = {};
-    if (form.card.replace(/\s/g, '').length < 16) e.card = 'Número de tarjeta inválido';
-    if (form.expiry.length < 5) e.expiry = 'Fecha inválida';
-    if (form.cvv.length < 3) e.cvv = 'CVV inválido';
-    if (form.holder.trim().length < 3) e.holder = 'Nombre requerido';
+    const e: Record<string,string> = {};
+    if (method === 'card') {
+      if (form.card.replace(/\s/g,'').length < 16) e.card = 'Número inválido';
+      if (form.expiry.length < 5)                   e.expiry = 'Fecha inválida';
+      if (form.cvv.length < 3)                      e.cvv = 'CVV inválido';
+      if (form.holder.trim().length < 3)             e.holder = 'Nombre requerido';
+    } else {
+      if (form.phone.replace(/\D/g,'').length < 10) e.phone = 'Número de celular inválido';
+    }
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -38,135 +49,213 @@ function CheckoutContent() {
     setTimeout(() => setStep('success'), 2500);
   };
 
-  const inputStyle = (field: string) => ({
-    background: 'var(--bg2)',
-    border: `1px solid ${errors[field] ? 'var(--danger)' : 'var(--border)'}`,
-    color: 'var(--text)',
-  });
+  const methodBtn = (id: typeof method, label: string, logo: React.ReactNode) => (
+    <button type="button" onClick={() => setMethod(id)} style={{
+      flex: 1, padding: '0.75rem 0.5rem', borderRadius: '12px', cursor: 'pointer',
+      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem',
+      background: method === id ? 'rgba(0,230,118,0.08)' : 'var(--surface2)',
+      border: `2px solid ${method === id ? 'rgba(0,230,118,0.4)' : 'rgba(255,255,255,0.07)'}`,
+      transition: 'all 0.18s', fontFamily: 'var(--font-body)',
+    }}>
+      {logo}
+      <span style={{ fontSize: '0.65rem', fontWeight: 600, color: method === id ? 'var(--accent)' : 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
+    </button>
+  );
 
+  // ── Processing ──────────────────────────────────────────────────────────
   if (step === 'processing') return (
-    <div className="max-w-md mx-auto text-center py-20">
-      <div className="w-16 h-16 rounded-full border-4 border-t-transparent animate-spin mx-auto mb-6"
-        style={{ borderColor: 'var(--border)', borderTopColor: 'var(--accent)' }} />
-      <h2 className="text-xl font-black uppercase tracking-wider mb-2">Procesando pago</h2>
-      <p style={{ color: 'var(--muted)' }}>No cierres esta ventana...</p>
+    <div className="max-w-sm mx-auto text-center py-20">
+      <div style={{ width: 64, height: 64, borderRadius: '50%', border: '4px solid rgba(0,230,118,0.2)', borderTopColor: 'var(--accent)', animation: 'spin 0.8s linear infinite', margin: '0 auto 1.5rem' }} />
+      <h2 style={{ fontFamily: 'var(--font-head)', fontSize: '1.3rem', fontWeight: 700, letterSpacing: '0.05em', marginBottom: '0.5rem' }}>
+        {method === 'nequi' ? 'Esperando confirmación Nequi...' : method === 'bancolombia' ? 'Conectando con Bancolombia...' : 'Procesando pago...'}
+      </h2>
+      <p style={{ color: 'var(--muted)', fontSize: '0.85rem' }}>No cierres esta ventana</p>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 
+  // ── Success ─────────────────────────────────────────────────────────────
   if (step === 'success') return (
-    <div className="max-w-md mx-auto text-center py-16">
-      <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl"
-        style={{ background: 'rgba(57,255,20,0.12)', border: '2px solid var(--accent)', boxShadow: '0 0 40px rgba(57,255,20,0.2)' }}>
-        ✓
-      </div>
-      <h2 className="text-2xl font-black uppercase tracking-wider mb-2" style={{ color: 'var(--accent)' }}>¡Pago exitoso!</h2>
-      <p className="text-sm mb-2" style={{ color: 'var(--muted)' }}>
-        Compraste <strong style={{ color: 'var(--text)' }}>{name}</strong>
-      </p>
-      <p className="text-sm mb-8" style={{ color: 'var(--muted)' }}>
-        Recibirás el código de descarga en tu correo en los próximos minutos.
-      </p>
+    <div className="max-w-sm mx-auto text-center py-12">
+      <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'rgba(0,230,118,0.1)', border: '2px solid var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', fontSize: '2rem', boxShadow: '0 0 40px rgba(0,230,118,0.2)' }}>✓</div>
+      <h2 style={{ fontFamily: 'var(--font-head)', fontSize: '1.6rem', fontWeight: 700, color: 'var(--accent)', marginBottom: '0.5rem' }}>¡Pago exitoso!</h2>
+      <p style={{ color: 'var(--muted)', fontSize: '0.88rem', marginBottom: '0.25rem' }}>Compraste <strong style={{ color: 'var(--text)' }}>{name}</strong></p>
+      <p style={{ color: 'var(--muted)', fontSize: '0.82rem', marginBottom: '2rem' }}>Recibirás el código en tu correo en los próximos minutos.</p>
 
-      <div className="rounded-2xl p-4 mb-8 text-left" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-        <div className="flex justify-between text-sm mb-2">
-          <span style={{ color: 'var(--muted)' }}>Orden #</span>
-          <span className="font-mono font-bold">GZ-{Math.floor(Math.random() * 900000 + 100000)}</span>
-        </div>
-        <div className="flex justify-between text-sm mb-2">
-          <span style={{ color: 'var(--muted)' }}>Producto</span>
-          <span>{name}</span>
-        </div>
-        <div className="flex justify-between text-sm">
-          <span style={{ color: 'var(--muted)' }}>Total pagado</span>
-          <span className="font-black" style={{ color: 'var(--accent)' }}>
-            {price === 0 ? 'Gratis' : `$${price.toLocaleString('es-CO')}`}
-          </span>
-        </div>
+      <div style={{ borderRadius: '14px', padding: '1.1rem 1.25rem', background: 'var(--surface)', border: '1px solid var(--border)', marginBottom: '1.5rem', textAlign: 'left' }}>
+        {[
+          ['Orden #', `GZ-${Math.floor(Math.random()*900000+100000)}`],
+          ['Producto', name],
+          ['Método', method === 'card' ? 'Tarjeta débito/crédito' : method === 'nequi' ? 'Nequi' : 'PSE Bancolombia'],
+          ['Total', price === 0 ? 'Gratis' : `$${price.toLocaleString('es-CO')}`],
+        ].map(([k, v]) => (
+          <div key={k} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', padding: '0.4rem 0', borderBottom: '1px solid var(--border)' }}>
+            <span style={{ color: 'var(--muted)' }}>{k}</span>
+            <span style={{ fontWeight: 600 }}>{v}</span>
+          </div>
+        ))}
       </div>
 
-      <Link href="/products" className="block py-3 rounded-xl font-black uppercase tracking-wider text-sm text-center"
-        style={{ background: 'var(--accent)', color: '#050806', boxShadow: '0 0 20px rgba(57,255,20,0.25)' }}>
+      <Link href="/products" style={{ display: 'block', padding: '0.85rem', borderRadius: '12px', background: 'var(--accent)', color: '#050806', fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: '0.9rem', letterSpacing: '0.06em', textDecoration: 'none', textAlign: 'center', boxShadow: '0 0 20px rgba(0,230,118,0.25)' }}>
         🎮 Seguir comprando
       </Link>
     </div>
   );
 
+  // ── Form ─────────────────────────────────────────────────────────────────
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => router.back()} style={{ color: 'var(--muted)' }}>←</button>
-        <h1 className="text-2xl font-black uppercase tracking-wider">💳 Checkout</h1>
+    <div style={{ maxWidth: 900, margin: '0 auto' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
+        <button onClick={() => router.back()} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--muted)', fontSize: '1.2rem' }}>←</button>
+        <h1 style={{ fontFamily: 'var(--font-head)', fontSize: '1.5rem', fontWeight: 700, letterSpacing: '0.04em' }}>Finalizar compra</h1>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Resumen del pedido */}
-        <div className="rounded-2xl p-5" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-          <h2 className="font-bold uppercase tracking-wider text-sm mb-4" style={{ color: 'var(--muted)' }}>Resumen</h2>
-          <div className="rounded-xl overflow-hidden mb-4 aspect-video">
-            <img src={image || FALLBACK} alt={name} className="w-full h-full object-cover"
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '1.5rem', alignItems: 'start' }}>
+
+        {/* ── LEFT: payment form ── */}
+        <form onSubmit={handlePay} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }} noValidate>
+
+          {/* Payment method selector */}
+          <div style={{ borderRadius: '16px', padding: '1.25rem', background: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <p style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--muted)', marginBottom: '1rem' }}>Método de pago</p>
+            <div style={{ display: 'flex', gap: '0.6rem' }}>
+              {methodBtn('card', 'Tarjeta',
+                <div style={{ display: 'flex', gap: '3px' }}>
+                  {['#1A1F71','#F7B600'].map((c,i) => <div key={i} style={{ width: 20, height: 14, borderRadius: 3, background: c, opacity: i===1?0.9:1 }} />)}
+                </div>
+              )}
+              {methodBtn('nequi', 'Nequi',
+                <div style={{ width: 36, height: 20, borderRadius: 4, background: '#6C1BC6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ color: '#fff', fontSize: '0.6rem', fontWeight: 800, letterSpacing: '0.02em' }}>NEQUI</span>
+                </div>
+              )}
+              {methodBtn('bancolombia', 'Bancolombia',
+                <div style={{ width: 36, height: 20, borderRadius: 4, background: '#FDDA24', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ color: '#002C76', fontSize: '0.45rem', fontWeight: 900, textAlign: 'center', lineHeight: 1 }}>BANCO COLOMBIA</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Card form */}
+          {method === 'card' && (
+            <div style={{ borderRadius: '16px', padding: '1.25rem', background: 'var(--surface)', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <p style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--muted)' }}>Datos de la tarjeta</p>
+
+              {/* Card brands */}
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                {[
+                  { label: 'VISA',   bg: '#1A1F71', color: '#fff'   },
+                  { label: 'MC',     bg: '#EB001B', color: '#fff'   },
+                  { label: 'AMEX',   bg: '#007BC1', color: '#fff'   },
+                  { label: 'DINERS', bg: '#004A97', color: '#fff'   },
+                ].map(b => (
+                  <div key={b.label} style={{ padding: '0.25rem 0.7rem', borderRadius: '6px', background: b.bg, color: b.color, fontSize: '0.6rem', fontWeight: 800, letterSpacing: '0.05em' }}>{b.label}</div>
+                ))}
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '0.4rem' }}>Nombre en la tarjeta</label>
+                <input value={form.holder} onChange={e => set('holder', e.target.value.toUpperCase())} placeholder="JUAN PÉREZ" style={inp(!!errors.holder)}
+                  onFocus={e => e.target.style.borderColor='rgba(0,230,118,0.4)'} onBlur={e => e.target.style.borderColor=errors.holder?'rgba(255,23,68,0.5)':'rgba(255,255,255,0.1)'} />
+                {errors.holder && <p style={{ color:'#ff6b8a', fontSize:'0.72rem', marginTop:'0.25rem' }}>{errors.holder}</p>}
+              </div>
+              <div>
+                <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '0.4rem' }}>Número de tarjeta</label>
+                <input value={form.card} onChange={e => set('card', fmtCard(e.target.value))} placeholder="1234 5678 9012 3456" maxLength={19} style={{ ...inp(!!errors.card), fontFamily: 'monospace', letterSpacing: '0.1em' }}
+                  onFocus={e => e.target.style.borderColor='rgba(0,230,118,0.4)'} onBlur={e => e.target.style.borderColor=errors.card?'rgba(255,23,68,0.5)':'rgba(255,255,255,0.1)'} />
+                {errors.card && <p style={{ color:'#ff6b8a', fontSize:'0.72rem', marginTop:'0.25rem' }}>{errors.card}</p>}
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div>
+                  <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '0.4rem' }}>Vencimiento</label>
+                  <input value={form.expiry} onChange={e => set('expiry', fmtExpiry(e.target.value))} placeholder="MM/AA" maxLength={5} style={{ ...inp(!!errors.expiry), fontFamily: 'monospace' }}
+                    onFocus={e => e.target.style.borderColor='rgba(0,230,118,0.4)'} onBlur={e => e.target.style.borderColor=errors.expiry?'rgba(255,23,68,0.5)':'rgba(255,255,255,0.1)'} />
+                  {errors.expiry && <p style={{ color:'#ff6b8a', fontSize:'0.72rem', marginTop:'0.25rem' }}>{errors.expiry}</p>}
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '0.4rem' }}>CVV</label>
+                  <input value={form.cvv} onChange={e => set('cvv', e.target.value.replace(/\D/g,'').slice(0,4))} placeholder="•••" maxLength={4} type="password" style={{ ...inp(!!errors.cvv), fontFamily: 'monospace' }}
+                    onFocus={e => e.target.style.borderColor='rgba(0,230,118,0.4)'} onBlur={e => e.target.style.borderColor=errors.cvv?'rgba(255,23,68,0.5)':'rgba(255,255,255,0.1)'} />
+                  {errors.cvv && <p style={{ color:'#ff6b8a', fontSize:'0.72rem', marginTop:'0.25rem' }}>{errors.cvv}</p>}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Nequi / PSE form */}
+          {(method === 'nequi' || method === 'bancolombia') && (
+            <div style={{ borderRadius: '16px', padding: '1.25rem', background: 'var(--surface)', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', borderRadius: '10px', background: method === 'nequi' ? 'rgba(108,27,198,0.08)' : 'rgba(0,44,118,0.08)', border: `1px solid ${method === 'nequi' ? 'rgba(108,27,198,0.25)' : 'rgba(0,44,118,0.25)'}` }}>
+                <div style={{ width: 48, height: 28, borderRadius: 6, background: method === 'nequi' ? '#6C1BC6' : '#FDDA24', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <span style={{ color: method === 'nequi' ? '#fff' : '#002C76', fontSize: '0.55rem', fontWeight: 900 }}>{method === 'nequi' ? 'NEQUI' : 'BANCO COLOMBIA'}</span>
+                </div>
+                <div>
+                  <p style={{ fontSize: '0.82rem', fontWeight: 600, marginBottom: '0.1rem' }}>{method === 'nequi' ? 'Pago con Nequi' : 'PSE — Bancolombia'}</p>
+                  <p style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>{method === 'nequi' ? 'Recibirás una notificación push para aprobar el pago' : 'Serás redirigido al portal PSE de Bancolombia'}</p>
+                </div>
+              </div>
+              <div>
+                <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '0.4rem' }}>Número de celular</label>
+                <input value={form.phone} onChange={e => set('phone', e.target.value.replace(/\D/g,'').slice(0,10))} placeholder="300 123 4567" style={{ ...inp(!!errors.phone), fontFamily: 'monospace', letterSpacing: '0.08em' }}
+                  onFocus={e => e.target.style.borderColor='rgba(0,230,118,0.4)'} onBlur={e => e.target.style.borderColor=errors.phone?'rgba(255,23,68,0.5)':'rgba(255,255,255,0.1)'} />
+                {errors.phone && <p style={{ color:'#ff6b8a', fontSize:'0.72rem', marginTop:'0.25rem' }}>{errors.phone}</p>}
+              </div>
+            </div>
+          )}
+
+          {/* Pay button */}
+          <button type="submit" style={{
+            width: '100%', padding: '1rem', borderRadius: '12px', border: 'none', cursor: 'pointer',
+            background: 'var(--accent)', color: '#050806',
+            fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: '1rem', letterSpacing: '0.08em',
+            boxShadow: '0 0 24px rgba(0,230,118,0.3)',
+          }}>
+            🔒 {price === 0 ? 'OBTENER GRATIS' : `PAGAR $${price.toLocaleString('es-CO')}`}
+          </button>
+
+          <p style={{ textAlign: 'center', fontSize: '0.72rem', color: 'var(--muted)' }}>
+            🔒 Transacción segura · SSL 256-bit · Demo educativa
+          </p>
+        </form>
+
+        {/* ── RIGHT: order summary ── */}
+        <div style={{ borderRadius: '16px', padding: '1.25rem', background: 'var(--surface)', border: '1px solid var(--border)', position: 'sticky', top: '1rem' }}>
+          <p style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--muted)', marginBottom: '1rem' }}>Resumen del pedido</p>
+
+          <div style={{ borderRadius: '10px', overflow: 'hidden', marginBottom: '1rem', height: '160px' }}>
+            <img src={image || FALLBACK} alt={name} style={{ width: '100%', height: '160px', objectFit: 'cover', display: 'block' }}
               onError={e => { (e.target as HTMLImageElement).src = FALLBACK; }} />
           </div>
-          <p className="font-bold mb-3">{name}</p>
-          <div className="space-y-2 text-sm" style={{ borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
-            <div className="flex justify-between"><span style={{ color: 'var(--muted)' }}>Subtotal</span><span>{price === 0 ? 'Gratis' : `$${price.toLocaleString('es-CO')}`}</span></div>
-            <div className="flex justify-between"><span style={{ color: 'var(--muted)' }}>Descuento</span><span style={{ color: 'var(--accent)' }}>$0</span></div>
-            <div className="flex justify-between font-black text-base pt-2" style={{ borderTop: '1px solid var(--border)' }}>
+
+          <p style={{ fontWeight: 700, fontSize: '0.95rem', marginBottom: '1rem', lineHeight: 1.3 }}>{name}</p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.82rem', borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--muted)' }}>Subtotal</span>
+              <span>{price === 0 ? 'Gratis' : `$${price.toLocaleString('es-CO')}`}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--muted)' }}>Descuento</span>
+              <span style={{ color: 'var(--accent)' }}>$0</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: '1rem', borderTop: '1px solid var(--border)', paddingTop: '0.5rem', marginTop: '0.25rem' }}>
               <span>Total</span>
               <span style={{ color: 'var(--accent)' }}>{price === 0 ? 'Gratis' : `$${price.toLocaleString('es-CO')}`}</span>
             </div>
           </div>
-        </div>
 
-        {/* Formulario de pago */}
-        <div className="rounded-2xl p-5" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-          <h2 className="font-bold uppercase tracking-wider text-sm mb-4" style={{ color: 'var(--muted)' }}>Datos de pago</h2>
-
-          {/* Logos tarjetas */}
-          <div className="flex gap-2 mb-4">
-            {['VISA', 'MC', 'AMEX'].map(b => (
-              <span key={b} className="px-2 py-1 rounded text-xs font-black" style={{ background: 'var(--surface2)', border: '1px solid var(--border)', color: 'var(--muted)' }}>{b}</span>
-            ))}
+          {/* Payment logos */}
+          <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid var(--border)' }}>
+            <p style={{ fontSize: '0.62rem', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.6rem' }}>Métodos aceptados</p>
+            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', alignItems: 'center' }}>
+              <div style={{ padding: '0.25rem 0.6rem', borderRadius: '5px', background: '#1A1F71', color: '#fff', fontSize: '0.58rem', fontWeight: 800 }}>VISA</div>
+              <div style={{ padding: '0.25rem 0.5rem', borderRadius: '5px', background: '#EB001B', color: '#fff', fontSize: '0.58rem', fontWeight: 800 }}>MC</div>
+              <div style={{ padding: '0.25rem 0.5rem', borderRadius: '5px', background: '#6C1BC6', color: '#fff', fontSize: '0.58rem', fontWeight: 800 }}>NEQUI</div>
+              <div style={{ padding: '0.25rem 0.5rem', borderRadius: '5px', background: '#FDDA24', color: '#002C76', fontSize: '0.55rem', fontWeight: 900 }}>PSE</div>
+              <div style={{ padding: '0.25rem 0.5rem', borderRadius: '5px', background: '#007BC1', color: '#fff', fontSize: '0.58rem', fontWeight: 800 }}>AMEX</div>
+            </div>
           </div>
-
-          <form onSubmit={handlePay} className="flex flex-col gap-4" noValidate>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--muted)' }}>Nombre en la tarjeta</label>
-              <input value={form.holder} onChange={e => set('holder', e.target.value.toUpperCase())}
-                placeholder="JUAN PÉREZ" className="px-4 py-3 rounded-xl text-sm outline-none" style={inputStyle('holder')} />
-              {errors.holder && <p className="text-xs" style={{ color: 'var(--danger)' }}>{errors.holder}</p>}
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--muted)' }}>Número de tarjeta</label>
-              <input value={form.card} onChange={e => set('card', formatCard(e.target.value))}
-                placeholder="1234 5678 9012 3456" maxLength={19} className="px-4 py-3 rounded-xl text-sm font-mono outline-none" style={inputStyle('card')} />
-              {errors.card && <p className="text-xs" style={{ color: 'var(--danger)' }}>{errors.card}</p>}
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--muted)' }}>Vencimiento</label>
-                <input value={form.expiry} onChange={e => set('expiry', formatExpiry(e.target.value))}
-                  placeholder="MM/AA" maxLength={5} className="px-4 py-3 rounded-xl text-sm font-mono outline-none" style={inputStyle('expiry')} />
-                {errors.expiry && <p className="text-xs" style={{ color: 'var(--danger)' }}>{errors.expiry}</p>}
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--muted)' }}>CVV</label>
-                <input value={form.cvv} onChange={e => set('cvv', e.target.value.replace(/\D/g, '').slice(0, 4))}
-                  placeholder="•••" maxLength={4} type="password" className="px-4 py-3 rounded-xl text-sm font-mono outline-none" style={inputStyle('cvv')} />
-                {errors.cvv && <p className="text-xs" style={{ color: 'var(--danger)' }}>{errors.cvv}</p>}
-              </div>
-            </div>
-
-            <button type="submit" className="py-3 rounded-xl font-black uppercase tracking-wider text-sm mt-2"
-              style={{ background: 'var(--accent)', color: '#050806', boxShadow: '0 0 20px rgba(57,255,20,0.25)' }}>
-              🔒 {price === 0 ? 'Obtener gratis' : `Pagar $${price.toLocaleString('es-CO')}`}
-            </button>
-
-            <p className="text-center text-xs" style={{ color: 'var(--muted)' }}>
-              🔒 Pago seguro · SSL cifrado · Demo educativa
-            </p>
-          </form>
         </div>
       </div>
     </div>
@@ -175,7 +264,7 @@ function CheckoutContent() {
 
 export default function CheckoutPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center py-20"><div className="w-8 h-8 border-4 border-t-transparent rounded-full animate-spin" style={{ borderColor: 'var(--border)', borderTopColor: 'var(--accent)' }} /></div>}>
+    <Suspense fallback={<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '50vh' }}><div style={{ width: 36, height: 36, borderRadius: '50%', border: '4px solid rgba(0,230,118,0.2)', borderTopColor: 'var(--accent)', animation: 'spin 0.8s linear infinite' }} /><style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style></div>}>
       <CheckoutContent />
     </Suspense>
   );

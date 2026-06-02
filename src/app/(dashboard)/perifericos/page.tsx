@@ -24,7 +24,7 @@ const CAT_META: Record<string, { icon: string; color: string }> = {
   Alfombrillas:{ icon: '🖱', color: '#37474f' },
 };
 
-const FALLBACK = 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=640&auto=format&fit=crop';
+const FALLBACK = 'https://images.unsplash.com/photo-1593640408182-31c228b6b20a?w=640&auto=format&fit=crop';
 
 export default function PerifericosPage() {
   const { user } = useAuth();
