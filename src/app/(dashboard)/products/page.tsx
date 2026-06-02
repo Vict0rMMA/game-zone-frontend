@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCart } from '@/contexts/CartContext';
 import { useCategories } from '@/hooks/useCategories';
 import { productService } from '@/services/product.service';
 import { Product } from '@/types/product.types';
@@ -222,6 +223,7 @@ function GameCard({ product: p, isAdmin, onDelete }: { product: Product; isAdmin
   const rating   = getRating(p.name);
   const platform = getPlatforms(p.name);
   const [hovered, setHovered] = useState(false);
+  const { addItem } = useCart();
 
   return (
     <div
@@ -289,7 +291,7 @@ function GameCard({ product: p, isAdmin, onDelete }: { product: Product; isAdmin
         {/* Botones */}
         <div style={{ display:'flex', gap:'0.45rem', alignItems:'center' }}>
           <button
-            onClick={() => toast.success(`${p.name} añadido al carrito`)}
+            onClick={() => { addItem(p); toast.success(`${p.name} añadido`); }}
             style={{
               flex:1, padding:'0.6rem 0.5rem', borderRadius:'9px', border:'none', cursor:'pointer',
               background:'#3b82f6', color:'#fff', fontWeight:700, fontSize:'0.8rem',

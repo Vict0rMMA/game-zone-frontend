@@ -1,10 +1,12 @@
 'use client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCart } from '@/contexts/CartContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function Header() {
   const { user, logout } = useAuth();
+  const { count } = useCart();
   const router = useRouter();
   const handleLogout = () => { logout(); router.push('/login'); };
 
@@ -28,6 +30,14 @@ export default function Header() {
 
       {user && (
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <Link href="/cart" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 36, height: 36, borderRadius: '10px', textDecoration: 'none', background: count > 0 ? 'rgba(0,230,118,0.08)' : 'var(--surface2)', border: `1px solid ${count > 0 ? 'rgba(0,230,118,0.25)' : 'var(--border)'}`, fontSize: '1.1rem', transition: 'all 0.18s' }}>
+            🛒
+            {count > 0 && (
+              <span style={{ position: 'absolute', top: -6, right: -6, background: '#e53935', color: '#fff', borderRadius: '50%', width: 18, height: 18, fontSize: '0.6rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-body)' }}>
+                {count > 9 ? '9+' : count}
+              </span>
+            )}
+          </Link>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
             <div style={{
               width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
