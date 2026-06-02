@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
@@ -11,8 +11,6 @@ import toast from 'react-hot-toast';
 
 const FALLBACK = 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=640&auto=format&fit=crop';
 const GAME_CATEGORIES = ['Acción','RPG','FPS','Indie','Carreras','Aventura','Terror','Deportes'];
-
-// ── Datos estáticos por juego ──────────────────────────────────────────────
 const PLATFORMS: Record<string, string> = {
   'Hollow Knight':             'PC / PS5 / Xbox / Switch',
   'Hades':                     'PC / PS5 / Xbox / Switch',
@@ -68,8 +66,6 @@ const GENRE_ICONS: Record<string, string> = {
   'Acción':'⚔','RPG':'⚡','FPS':'🎯','Indie':'🌟',
   'Carreras':'🏎','Aventura':'🗺','Terror':'💀','Deportes':'⚽',
 };
-
-// ── Estrellas ──────────────────────────────────────────────────────────────
 function Stars({ v }: { v: number }) {
   return (
     <div style={{ display:'flex', gap:'1px' }}>
@@ -83,8 +79,6 @@ function Stars({ v }: { v: number }) {
     </div>
   );
 }
-
-// ── Page ───────────────────────────────────────────────────────────────────
 export default function ProductsPage() {
   const { user } = useAuth();
   const { categories } = useCategories();
@@ -130,7 +124,6 @@ export default function ProductsPage() {
 
   return (
     <div>
-      {/* ── Header ── */}
       <div className="flex items-center justify-between flex-wrap gap-3 mb-5">
         <div>
           <h1 style={{ fontFamily:'var(--font-head)', fontSize:'1.6rem', fontWeight:700, letterSpacing:'0.04em' }}>
@@ -150,8 +143,6 @@ export default function ProductsPage() {
           }}>+ Nuevo juego</Link>
         )}
       </div>
-
-      {/* ── Search ── */}
       <div className="flex gap-2 mb-4 flex-wrap">
         <input value={search} onChange={e => setSearch(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && setQuery(search)}
@@ -167,8 +158,6 @@ export default function ProductsPage() {
           <button onClick={() => { setQuery(''); setSearch(''); setCatId(''); }} style={{ padding:'0.6rem 0.9rem', borderRadius:'10px', cursor:'pointer', background:'var(--surface)', color:'var(--muted)', border:'1px solid var(--border)', fontSize:'0.84rem', fontFamily:'var(--font-body)' }}>✕</button>
         )}
       </div>
-
-      {/* ── Genre tabs ── */}
       <div className="flex gap-2 flex-wrap mb-6">
         {[{ id:'', name:'TODOS', count: all.length, icon:'🎮' },
           ...gameCats.map(c => ({ id: c.id, name: c.name.toUpperCase(), count: counts[c.id] ?? 0, icon: GENRE_ICONS[c.name] ?? '◈' }))
@@ -188,8 +177,6 @@ export default function ProductsPage() {
           </button>
         ))}
       </div>
-
-      {/* ── Grid ── */}
       {loading && <LoadingSpinner />}
 
       {!loading && filtered.length === 0 && (
@@ -206,8 +193,6 @@ export default function ProductsPage() {
           ))}
         </div>
       )}
-
-      {/* ── Footer ── */}
       {!loading && (
         <p style={{ textAlign:'center', marginTop:'2rem', fontSize:'0.78rem', color:'var(--muted)' }}>
           ¿No encuentras tu juego?{' '}
@@ -218,8 +203,6 @@ export default function ProductsPage() {
           </span>
         </p>
       )}
-
-      {/* ── Delete modal ── */}
       <Modal open={!!deleting} title="Eliminar juego" onClose={() => setDeleting(null)}>
         <p style={{ color:'var(--muted)', fontSize:'0.9rem', marginBottom:'1.5rem' }}>
           ¿Eliminar <strong style={{ color:'var(--text)' }}>{deleting?.name}</strong>?
@@ -232,8 +215,6 @@ export default function ProductsPage() {
     </div>
   );
 }
-
-// ── Card ──────────────────────────────────────────────────────────────────
 function GameCard({ product: p, isAdmin, onDelete }: { product: Product; isAdmin: boolean; onDelete: () => void }) {
   const price    = Number(p.price);
   const isFree   = price === 0;

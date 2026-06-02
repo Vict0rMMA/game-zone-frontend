@@ -1,9 +1,7 @@
-'use client';
+﻿'use client';
 import { useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-
-// ── Logo SVGs reales ───────────────────────────────────────────────────────
 function NequiLogo({ size = 38 }: { size?: number }) {
   return (
     <svg width={size} height={size * 0.82} viewBox="0 0 46 38" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -95,8 +93,6 @@ function CheckoutContent() {
       <span style={{ fontSize: '0.65rem', fontWeight: 600, color: method === id ? 'var(--accent)' : 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
     </button>
   );
-
-  // ── Processing ──────────────────────────────────────────────────────────
   if (step === 'processing') return (
     <div className="max-w-sm mx-auto text-center py-20">
       <div style={{ width: 64, height: 64, borderRadius: '50%', border: '4px solid rgba(0,230,118,0.2)', borderTopColor: 'var(--accent)', animation: 'spin 0.8s linear infinite', margin: '0 auto 1.5rem' }} />
@@ -107,8 +103,6 @@ function CheckoutContent() {
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
-
-  // ── Success ─────────────────────────────────────────────────────────────
   if (step === 'success') return (
     <div className="max-w-sm mx-auto text-center py-12">
       <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'rgba(0,230,118,0.1)', border: '2px solid var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem', fontSize: '2rem', boxShadow: '0 0 40px rgba(0,230,118,0.2)' }}>✓</div>
@@ -135,8 +129,6 @@ function CheckoutContent() {
       </Link>
     </div>
   );
-
-  // ── Form ─────────────────────────────────────────────────────────────────
   return (
     <div style={{ maxWidth: 900, margin: '0 auto' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
@@ -145,8 +137,6 @@ function CheckoutContent() {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '1.5rem', alignItems: 'start' }}>
-
-        {/* ── LEFT: payment form ── */}
         <form onSubmit={handlePay} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }} noValidate>
 
           {/* Payment method selector */}
@@ -254,8 +244,6 @@ function CheckoutContent() {
             🔒 Transacción segura · SSL 256-bit · Demo educativa
           </p>
         </form>
-
-        {/* ── RIGHT: order summary ── */}
         <div style={{ borderRadius: '16px', padding: '1.25rem', background: 'var(--surface)', border: '1px solid var(--border)', position: 'sticky', top: '1rem' }}>
           <p style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--muted)', marginBottom: '1rem' }}>Resumen del pedido</p>
 

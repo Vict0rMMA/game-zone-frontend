@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
@@ -51,7 +51,6 @@ export default function PerifericosPage() {
 
   return (
     <div>
-      {/* ── Header ── */}
       <div style={{ marginBottom: '1.75rem' }}>
         <div className="flex items-start justify-between flex-wrap gap-3 mb-5">
           <div>
@@ -100,8 +99,6 @@ export default function PerifericosPage() {
           })}
         </div>
       </div>
-
-      {/* ── No categories ── */}
       {!loading && peripheralCats.length === 0 && (
         <div className="text-center py-20 rounded-2xl" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
           <p style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🎧</p>
@@ -126,8 +123,6 @@ export default function PerifericosPage() {
           )}
         </div>
       )}
-
-      {/* ── Grid ── */}
       {!loading && products.length > 0 && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: '1.25rem' }}>
           {products.map(p => (
