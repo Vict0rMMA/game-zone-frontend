@@ -56,6 +56,12 @@ const BADGES: Record<string, { label: string; bg: string }> = {
   'Apex Legends':              { label: 'Gratis',     bg: '#16a34a' },
   'Rocket League':             { label: 'Gratis',     bg: '#16a34a' },
   'CoD Warzone':               { label: 'Gratis',     bg: '#16a34a' },
+  'Warframe':                  { label: 'Gratis',     bg: '#16a34a' },
+  'Destiny 2':                 { label: 'Gratis',     bg: '#16a34a' },
+  'Rust':                      { label: 'Survival',   bg: '#92400e' },
+  'Terraria':                  { label: 'Clásico',    bg: '#065f46' },
+  'Resident Evil 4 Remake':    { label: 'Remake',     bg: '#dc2626' },
+  'Starfield':                 { label: 'Nuevo',      bg: '#1d4ed8' },
 };
 
 const GENRE_ICONS: Record<string, string> = {
@@ -248,14 +254,14 @@ function GameCard({ product: p, isAdmin, onDelete }: { product: Product; isAdmin
         transition:'transform 0.2s, box-shadow 0.2s',
       }}>
 
-      {/* Image */}
-      <div style={{ position:'relative', paddingTop:'56.25%', background:'#070a14', flexShrink:0, overflow:'hidden' }}>
+      {/* Image — altura fija 180px, object-fit:cover */}
+      <div style={{ position:'relative', height:'180px', overflow:'hidden', borderRadius:'12px 12px 0 0', background:'#070a14', flexShrink:0 }}>
         <img src={p.image || FALLBACK} alt={p.name}
-          style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover',
+          style={{ width:'100%', height:'180px', objectFit:'cover', display:'block',
             transform: hovered ? 'scale(1.05)' : 'scale(1)', transition:'transform 0.35s' }}
           onError={e => { (e.target as HTMLImageElement).src = FALLBACK; }}
         />
-        <div style={{ position:'absolute', inset:0, background:'linear-gradient(to top, rgba(7,10,20,0.8) 0%, transparent 55%)' }} />
+        <div style={{ position:'absolute', inset:0, background:'linear-gradient(to top, rgba(7,10,20,0.75) 0%, transparent 60%)' }} />
         {badge && (
           <div style={{ position:'absolute', top:'0.55rem', left:'0.55rem',
             padding:'0.18rem 0.6rem', borderRadius:'5px', fontSize:'0.62rem',

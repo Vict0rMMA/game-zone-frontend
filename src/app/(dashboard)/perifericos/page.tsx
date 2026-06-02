@@ -173,15 +173,15 @@ function PeriphCard({ product: p, isAdmin, onDelete }: { product: Product; isAdm
       onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 16px 48px rgba(0,0,0,0.55)'; }}
       onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.transform = ''; (e.currentTarget as HTMLDivElement).style.boxShadow = ''; }}>
 
-      {/* Image */}
-      <div style={{ position: 'relative', paddingTop: '60%', background: '#0a0e1a', flexShrink: 0, overflow: 'hidden' }}>
+      {/* Image — altura fija 180px, object-fit:cover */}
+      <div style={{ position: 'relative', height: '180px', overflow: 'hidden', borderRadius: '12px 12px 0 0', background: '#0a0e1a', flexShrink: 0 }}>
         <img src={p.image || FALLBACK} alt={p.name}
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.35s' }}
+          style={{ width: '100%', height: '180px', objectFit: 'cover', display: 'block', transition: 'transform 0.35s' }}
           onError={e => { (e.target as HTMLImageElement).src = FALLBACK; }}
           onMouseEnter={e => { (e.target as HTMLImageElement).style.transform = 'scale(1.06)'; }}
           onMouseLeave={e => { (e.target as HTMLImageElement).style.transform = 'scale(1)'; }}
         />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(8,10,20,0.7) 0%, transparent 55%)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(8,10,20,0.65) 0%, transparent 60%)' }} />
         {/* Category chip */}
         <div style={{
           position: 'absolute', top: '0.6rem', left: '0.6rem',
