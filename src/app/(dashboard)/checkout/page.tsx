@@ -53,7 +53,7 @@ function CheckoutContent() {
 
   const [step,    setStep]    = useState<'form' | 'processing' | 'success'>('form');
   const [method,  setMethod]  = useState<'card' | 'nequi' | 'bancolombia'>('card');
-  const [form,    setForm]    = useState({ card: '', expiry: '', cvv: '', holder: '', phone: '' });
+  const [form,    setForm]    = useState({ card: '', expiry: '', cvv: '', holder: '', phone: '', accountType: 'ahorros', accountNum: '' });
   const [errors,  setErrors]  = useState<Record<string, string>>({});
 
   const set = (k: string, v: string) => setForm(p => ({ ...p, [k]: v }));
@@ -67,8 +67,10 @@ function CheckoutContent() {
       if (form.expiry.length < 5)                   e.expiry = 'Fecha inválida';
       if (form.cvv.length < 3)                      e.cvv = 'CVV inválido';
       if (form.holder.trim().length < 3)             e.holder = 'Nombre requerido';
-    } else {
+    } else if (method === 'nequi') {
       if (form.phone.replace(/\D/g,'').length < 10) e.phone = 'Número de celular inválido';
+    } else {
+      if (form.accountNum.replace(/\D/g,'').length < 6) e.accountNum = 'Número de cuenta inválido';
     }
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -221,12 +223,31 @@ function CheckoutContent() {
                   <p style={{ fontSize: '0.72rem', color: 'var(--muted)' }}>{method === 'nequi' ? 'Recibirás una notificación push para aprobar el pago' : 'Serás redirigido al portal PSE de Bancolombia'}</p>
                 </div>
               </div>
-              <div>
-                <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '0.4rem' }}>Número de celular</label>
-                <input value={form.phone} onChange={e => set('phone', e.target.value.replace(/\D/g,'').slice(0,10))} placeholder="300 123 4567" style={{ ...inp(!!errors.phone), fontFamily: 'monospace', letterSpacing: '0.08em' }}
-                  onFocus={e => e.target.style.borderColor='rgba(0,230,118,0.4)'} onBlur={e => e.target.style.borderColor=errors.phone?'rgba(255,23,68,0.5)':'rgba(255,255,255,0.1)'} />
-                {errors.phone && <p style={{ color:'#ff6b8a', fontSize:'0.72rem', marginTop:'0.25rem' }}>{errors.phone}</p>}
-              </div>
+              {method === 'nequi' ? (
+                <div>
+                  <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '0.4rem' }}>Número de celular</label>
+                  <input value={form.phone} onChange={e => set('phone', e.target.value.replace(/\D/g,'').slice(0,10))} placeholder="300 123 4567" style={{ ...inp(!!errors.phone), fontFamily: 'monospace', letterSpacing: '0.08em' }}
+                    onFocus={e => e.target.style.borderColor='rgba(0,230,118,0.4)'} onBlur={e => e.target.style.borderColor=errors.phone?'rgba(255,23,68,0.5)':'rgba(255,255,255,0.1)'} />
+                  {errors.phone && <p style={{ color:'#ff6b8a', fontSize:'0.72rem', marginTop:'0.25rem' }}>{errors.phone}</p>}
+                </div>
+              ) : (
+                <>
+                  <div>
+                    <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '0.4rem' }}>Tipo de cuenta</label>
+                    <select value={form.accountType} onChange={e => set('accountType', e.target.value)}
+                      style={{ ...inp(false), cursor: 'pointer' }}>
+                      <option value="ahorros">Cuenta de Ahorros</option>
+                      <option value="corriente">Cuenta Corriente</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'block', marginBottom: '0.4rem' }}>Número de cuenta</label>
+                    <input value={form.accountNum} onChange={e => set('accountNum', e.target.value.replace(/\D/g,'').slice(0,16))} placeholder="0000000000000000" style={{ ...inp(!!errors.accountNum), fontFamily: 'monospace', letterSpacing: '0.08em' }}
+                      onFocus={e => e.target.style.borderColor='rgba(0,230,118,0.4)'} onBlur={e => e.target.style.borderColor=errors.accountNum?'rgba(255,23,68,0.5)':'rgba(255,255,255,0.1)'} />
+                    {errors.accountNum && <p style={{ color:'#ff6b8a', fontSize:'0.72rem', marginTop:'0.25rem' }}>{errors.accountNum}</p>}
+                  </div>
+                </>
+              )}
             </div>
           )}
 
