@@ -6,6 +6,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { authService } from '@/services/auth.service';
 import toast from 'react-hot-toast';
 
+const BG = 'https://cdn.cloudflare.steamstatic.com/steam/apps/1091500/library_hero.jpg';
+
 export default function LoginPage() {
   const { login, user, loading: authLoading } = useAuth();
   const router = useRouter();
@@ -13,6 +15,7 @@ export default function LoginPage() {
   useEffect(() => {
     if (!authLoading && user) router.replace('/dashboard');
   }, [user, authLoading, router]);
+
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [form, setForm] = useState({ email: '', password: '' });
@@ -22,7 +25,8 @@ export default function LoginPage() {
     const e: Record<string, string> = {};
     if (!form.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) e.email = 'Correo inválido';
     if (form.password.length < 6) e.password = 'Mínimo 6 caracteres';
-    setErrors(e); return Object.keys(e).length === 0;
+    setErrors(e);
+    return Object.keys(e).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,121 +45,165 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex" style={{ background: 'var(--bg)', fontFamily: 'var(--font-body)' }}>
-      {/* LEFT — Visual */}
-      <div className="hidden lg:flex flex-1 relative overflow-hidden items-center justify-center p-16"
-        style={{ background: 'linear-gradient(135deg, #080a12 0%, #0c0f1e 100%)' }}>
-        {/* BG effects */}
-        <div className="absolute inset-0" style={{
-          backgroundImage: 'radial-gradient(circle at 25% 35%, rgba(0,230,118,0.07) 0%, transparent 50%), radial-gradient(circle at 75% 65%, rgba(41,121,255,0.06) 0%, transparent 50%)',
+    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'var(--font-body)', background: '#07090f' }}>
+
+      {/* ── IZQUIERDA — imagen con overlay ─────────────────────────── */}
+      <div style={{
+        flex: 1, position: 'relative', overflow: 'hidden',
+        display: 'none',
+      }} className="lg:block" >
+        {/* Imagen de fondo */}
+        <img
+          src={BG}
+          alt=""
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
+          onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+        />
+        {/* Gradiente oscuro */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(to right, rgba(7,9,15,0.15) 0%, rgba(7,9,15,0.6) 70%, rgba(7,9,15,0.98) 100%)',
         }} />
-        <div className="absolute inset-0" style={{
-          backgroundImage: 'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)',
-          backgroundSize: '60px 60px',
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'linear-gradient(to top, rgba(7,9,15,0.9) 0%, transparent 50%)',
         }} />
 
-        <div className="relative z-10 max-w-lg">
+        {/* Contenido sobre la imagen */}
+        <div style={{ position: 'relative', zIndex: 1, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '2.5rem 3rem' }}>
           {/* Logo */}
-          <div className="flex items-center gap-3 mb-12">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl"
-              style={{ background: 'linear-gradient(135deg, var(--accent), #00bfa5)', boxShadow: '0 0 24px var(--accent-glow)' }}>
-              🎮
-            </div>
-            <span style={{ fontFamily: 'var(--font-head)', fontSize: '1.6rem', fontWeight: 700, letterSpacing: '0.08em', color: 'var(--text)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <div style={{
+              width: 36, height: 36, borderRadius: 10,
+              background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '1.1rem',
+            }}>🎮</div>
+            <span style={{ fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: '1.4rem', letterSpacing: '0.1em', color: '#fff' }}>
               GAME<span style={{ color: 'var(--accent)' }}>ZONE</span>
             </span>
           </div>
 
-          <h1 style={{ fontFamily: 'var(--font-head)', fontSize: '3.5rem', fontWeight: 700, lineHeight: 1.1, letterSpacing: '-0.01em', color: 'var(--text)', marginBottom: '1.5rem' }}>
-            Tu universo<br />
-            <span style={{ color: 'var(--accent)' }}>gaming</span><br />
-            empieza aquí.
-          </h1>
-          <p style={{ color: 'var(--muted)', fontSize: '1rem', lineHeight: 1.6, marginBottom: '3rem' }}>
-            Más de 200 títulos, periféricos pro y ofertas exclusivas cada semana para los verdaderos gamers.
-          </p>
-
-          <div className="grid grid-cols-3 gap-4">
-            {[['200+', 'Juegos'], ['50+', 'Marcas'], ['24/7', 'Soporte']].map(([v, l]) => (
-              <div key={l} className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)' }}>
-                <div style={{ fontFamily: 'var(--font-head)', fontSize: '1.8rem', fontWeight: 700, color: 'var(--accent)', lineHeight: 1 }}>{v}</div>
-                <div style={{ fontSize: '0.72rem', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: '0.25rem' }}>{l}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* RIGHT — Form */}
-      <div className="w-full lg:w-[480px] flex items-center justify-center p-8 relative"
-        style={{ background: 'var(--bg2)', borderLeft: '1px solid var(--border)' }}>
-        <div className="absolute inset-0" style={{
-          backgroundImage: 'radial-gradient(circle at 50% 0%, rgba(0,230,118,0.04) 0%, transparent 50%)',
-          pointerEvents: 'none',
-        }} />
-
-        <div className="relative w-full max-w-sm">
-          {/* Mobile logo */}
-          <div className="flex items-center gap-2 mb-10 lg:hidden">
-            <span className="text-2xl">🎮</span>
-            <span style={{ fontFamily: 'var(--font-head)', fontSize: '1.4rem', fontWeight: 700, letterSpacing: '0.08em' }}>
-              GAME<span style={{ color: 'var(--accent)' }}>ZONE</span>
-            </span>
-          </div>
-
-          <div className="mb-8">
-            <h2 style={{ fontFamily: 'var(--font-head)', fontSize: '1.75rem', fontWeight: 700, letterSpacing: '0.04em', marginBottom: '0.5rem' }}>
-              Iniciar sesión
-            </h2>
-            <p style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>
-              ¿Sin cuenta?{' '}
-              <Link href="/register" style={{ color: 'var(--accent)', fontWeight: 600 }}>Crear una gratis</Link>
+          {/* Texto inferior */}
+          <div>
+            <p style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '0.75rem' }}>
+              Tu tienda gamer
             </p>
-          </div>
-
-          {errors.general && (
-            <div className="mb-5 px-4 py-3 rounded-xl text-sm flex items-center gap-2"
-              style={{ background: 'rgba(255,23,68,0.08)', border: '1px solid rgba(255,23,68,0.2)', color: '#ff6b8a' }}>
-              <span>⚠</span> {errors.general}
+            <h1 style={{ fontFamily: 'var(--font-head)', fontSize: '3rem', fontWeight: 700, lineHeight: 1.15, color: '#fff', marginBottom: '1.25rem', letterSpacing: '0.02em' }}>
+              Juegos, periféricos<br />y mucho más.
+            </h1>
+            <div style={{ display: 'flex', gap: '2rem' }}>
+              {[['200+', 'Títulos'], ['26', 'Géneros'], ['24/7', 'Soporte']].map(([v, l]) => (
+                <div key={l}>
+                  <div style={{ fontFamily: 'var(--font-head)', fontSize: '1.6rem', fontWeight: 700, color: 'var(--accent)', lineHeight: 1 }}>{v}</div>
+                  <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.1em', marginTop: 3 }}>{l}</div>
+                </div>
+              ))}
             </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
-            {[
-              { key: 'email', label: 'Correo electrónico', type: 'email', placeholder: 'tu@correo.com', auto: 'email' },
-              { key: 'password', label: 'Contraseña', type: 'password', placeholder: '••••••••', auto: 'current-password' },
-            ].map(({ key, label, type, placeholder, auto }) => (
-              <div key={key}>
-                <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--muted)', marginBottom: '0.5rem' }}>
-                  {label}
-                </label>
-                <input type={type} value={form[key as keyof typeof form]} onChange={e => set(key, e.target.value)}
-                  placeholder={placeholder} autoComplete={auto}
-                  style={{
-                    width: '100%', padding: '0.875rem 1rem', borderRadius: '0.75rem', fontSize: '0.9rem',
-                    background: 'var(--surface)', border: `1px solid ${errors[key] ? 'rgba(255,23,68,0.4)' : 'var(--border2)'}`,
-                    color: 'var(--text)', outline: 'none', fontFamily: 'var(--font-body)',
-                  }}
-                  onFocus={e => { e.target.style.borderColor = 'rgba(0,230,118,0.4)'; e.target.style.boxShadow = '0 0 0 3px rgba(0,230,118,0.06)'; }}
-                  onBlur={e => { e.target.style.borderColor = errors[key] ? 'rgba(255,23,68,0.4)' : 'var(--border2)'; e.target.style.boxShadow = 'none'; }}
-                />
-                {errors[key] && <p style={{ color: '#ff6b8a', fontSize: '0.75rem', marginTop: '0.3rem' }}>{errors[key]}</p>}
-              </div>
-            ))}
-
-            <button type="submit" disabled={loading}
-              className="flex items-center justify-center gap-2"
-              style={{
-                width: '100%', padding: '0.9rem', borderRadius: '0.75rem', border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
-                background: loading ? 'rgba(0,230,118,0.4)' : 'var(--accent)', color: '#050d08',
-                fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: '0.95rem', letterSpacing: '0.08em',
-                boxShadow: loading ? 'none' : '0 0 24px rgba(0,230,118,0.25), 0 4px 12px rgba(0,0,0,0.3)',
-              }}>
-              {loading ? <><span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />ENTRANDO...</> : 'ENTRAR →'}
-            </button>
-          </form>
+          </div>
         </div>
       </div>
+
+      {/* ── DERECHA — formulario ────────────────────────────────────── */}
+      <div style={{
+        width: '100%', maxWidth: 460,
+        display: 'flex', flexDirection: 'column', justifyContent: 'center',
+        padding: '3rem 2.5rem',
+        background: '#07090f',
+        borderLeft: '1px solid rgba(255,255,255,0.05)',
+      }}>
+        {/* Logo móvil */}
+        <div className="lg:hidden" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '2.5rem' }}>
+          <div style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>🎮</div>
+          <span style={{ fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: '1.3rem', letterSpacing: '0.1em' }}>
+            GAME<span style={{ color: 'var(--accent)' }}>ZONE</span>
+          </span>
+        </div>
+
+        <h2 style={{ fontSize: '1.6rem', fontWeight: 700, color: '#fff', marginBottom: '0.35rem', fontFamily: 'var(--font-head)', letterSpacing: '0.03em' }}>
+          Iniciar sesión
+        </h2>
+        <p style={{ fontSize: '0.875rem', color: 'var(--muted)', marginBottom: '2rem' }}>
+          ¿Sin cuenta?{' '}
+          <Link href="/register" style={{ color: 'var(--accent)', fontWeight: 600, textDecoration: 'none' }}>
+            Crear una gratis
+          </Link>
+        </p>
+
+        {errors.general && (
+          <div style={{
+            marginBottom: '1.25rem', padding: '0.75rem 1rem', borderRadius: 10, fontSize: '0.85rem',
+            background: 'rgba(255,23,68,0.07)', border: '1px solid rgba(255,23,68,0.18)', color: '#ff6b8a',
+            display: 'flex', alignItems: 'center', gap: '0.5rem',
+          }}>
+            <span style={{ fontSize: '0.9rem' }}>⚠</span> {errors.general}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }} noValidate>
+          {[
+            { key: 'email',    label: 'Correo electrónico', type: 'email',    placeholder: 'tu@correo.com', auto: 'email' },
+            { key: 'password', label: 'Contraseña',         type: 'password', placeholder: '••••••••',      auto: 'current-password' },
+          ].map(({ key, label, type, placeholder, auto }) => (
+            <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <label style={{ fontSize: '0.75rem', fontWeight: 500, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.04em' }}>
+                {label}
+              </label>
+              <input
+                type={type}
+                value={form[key as keyof typeof form]}
+                onChange={e => set(key, e.target.value)}
+                placeholder={placeholder}
+                autoComplete={auto}
+                style={{
+                  padding: '0.8rem 1rem', borderRadius: 10, fontSize: '0.9rem',
+                  background: 'rgba(255,255,255,0.04)',
+                  border: `1px solid ${errors[key] ? 'rgba(255,23,68,0.35)' : 'rgba(255,255,255,0.09)'}`,
+                  color: '#e8eaf6', outline: 'none', fontFamily: 'var(--font-body)',
+                  transition: 'border-color 0.15s, box-shadow 0.15s',
+                }}
+                onFocus={e => {
+                  e.target.style.borderColor = 'rgba(0,230,118,0.35)';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(0,230,118,0.05)';
+                }}
+                onBlur={e => {
+                  e.target.style.borderColor = errors[key] ? 'rgba(255,23,68,0.35)' : 'rgba(255,255,255,0.09)';
+                  e.target.style.boxShadow = 'none';
+                }}
+              />
+              {errors[key] && <p style={{ fontSize: '0.73rem', color: '#ff6b8a', marginTop: 1 }}>{errors[key]}</p>}
+            </div>
+          ))}
+
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              marginTop: '0.5rem', padding: '0.85rem', borderRadius: 10, border: 'none',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              background: loading ? 'rgba(0,230,118,0.35)' : 'var(--accent)',
+              color: '#040d06',
+              fontFamily: 'var(--font-head)', fontWeight: 700, fontSize: '0.95rem', letterSpacing: '0.08em',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+              transition: 'opacity 0.15s, transform 0.15s',
+            }}
+            onMouseEnter={e => { if (!loading) (e.currentTarget as HTMLButtonElement).style.opacity = '0.88'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '1'; }}
+          >
+            {loading
+              ? <><span style={{ width: 16, height: 16, border: '2px solid currentColor', borderTopColor: 'transparent', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.7s linear infinite' }} />ENTRANDO...</>
+              : 'ENTRAR →'}
+          </button>
+        </form>
+
+        <p style={{ marginTop: '2rem', fontSize: '0.75rem', color: 'rgba(255,255,255,0.2)', textAlign: 'center' }}>
+          GameZone · Todos los derechos reservados
+        </p>
+      </div>
+
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @media (min-width: 1024px) { .lg\\:block { display: block !important; } .lg\\:hidden { display: none !important; } }
+      `}</style>
     </div>
   );
 }
