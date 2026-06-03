@@ -10,7 +10,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Modal from '@/components/ui/Modal';
 import toast from 'react-hot-toast';
 
-const PERIPHERAL_NAMES = ['Teclados','Mouse','Audífonos','Controles','Monitores','Sillas','Micrófonos','Webcams','Alfombrillas'];
+const PERIPHERAL_NAMES = ['Teclados','Mouse','Audífonos','Controles','Monitores','Sillas','Micrófonos','Alfombrillas'];
 
 const CAT_META: Record<string, { icon: string; color: string }> = {
   Teclados:    { icon: '⌨️', color: '#1e88e5' },
