@@ -76,7 +76,7 @@ export default function PerifericosPage() {
 
         {/* Category filter */}
         <div className="flex gap-2 flex-wrap">
-          <button onClick={() => { setCatFilter(''); refetch(1); }} style={{
+          <button onClick={() => setCatFilter('')} style={{
             padding: '0.45rem 1rem', borderRadius: '8px', border: 'none', cursor: 'pointer',
             fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '0.78rem',
             background: catFilter === '' ? 'var(--accent2)' : 'var(--surface)',
@@ -86,7 +86,7 @@ export default function PerifericosPage() {
             const meta = CAT_META[cat.name] ?? { icon: '◈', color: '#555' };
             const active = catFilter === cat.id;
             return (
-              <button key={cat.id} onClick={() => { setCatFilter(cat.id); refetch(1); }} style={{
+              <button key={cat.id} onClick={() => setCatFilter(cat.id)} style={{
                 padding: '0.45rem 0.9rem', borderRadius: '8px', border: 'none', cursor: 'pointer',
                 fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.3rem',
                 background: active ? meta.color : 'var(--surface)',
