@@ -47,7 +47,7 @@ export default function LoginPage() {
         if (d.y > canvas.height) d.y = 0;
         ctx.beginPath();
         ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(57,255,20,${d.a * 0.55})`;
+        ctx.fillStyle = `rgba(57,255,20,${d.a * 0.8})`;
         ctx.fill();
       }
       // líneas entre partículas cercanas
@@ -56,12 +56,12 @@ export default function LoginPage() {
           const dx = dots[i].x - dots[j].x;
           const dy = dots[i].y - dots[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 110) {
+          if (dist < 130) {
             ctx.beginPath();
             ctx.moveTo(dots[i].x, dots[i].y);
             ctx.lineTo(dots[j].x, dots[j].y);
-            ctx.strokeStyle = `rgba(57,255,20,${(1 - dist / 110) * 0.08})`;
-            ctx.lineWidth = 0.6;
+            ctx.strokeStyle = `rgba(57,255,20,${(1 - dist / 130) * 0.18})`;
+            ctx.lineWidth = 0.7;
             ctx.stroke();
           }
         }
@@ -105,34 +105,53 @@ export default function LoginPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Outfit:wght@300;400;500;600&display=swap');
 
+        html, body { margin:0; padding:0; background:#07080e; }
+
         .gz-root {
           min-height: 100vh;
-          background: #07080e;
+          background: transparent;
           font-family: 'Outfit', sans-serif;
           display: flex; align-items: center; justify-content: center;
-          position: relative; overflow: hidden; padding: 2rem 1rem;
+          position: relative; z-index: 1; padding: 2rem 1rem;
+        }
+
+        /* fondo base */
+        .gz-bg-base {
+          position: fixed; inset: 0; z-index: 0;
+          background:
+            radial-gradient(ellipse 70% 55% at 15% 85%, rgba(57,255,20,.11) 0%, transparent 55%),
+            radial-gradient(ellipse 55% 50% at 85% 15%, rgba(100,50,255,.09) 0%, transparent 55%),
+            radial-gradient(ellipse 40% 40% at 50% 50%, rgba(57,255,20,.04) 0%, transparent 60%),
+            #07080e;
         }
 
         /* orbs */
         .gz-orb {
-          position: fixed; border-radius: 50%; filter: blur(100px);
+          position: fixed; border-radius: 50%; filter: blur(80px);
           pointer-events: none; animation: gz-drift 14s ease-in-out infinite alternate;
         }
-        .gz-o1 { width:500px;height:500px;top:-120px;left:-100px;background:rgba(57,255,20,.09); }
-        .gz-o2 { width:400px;height:400px;bottom:-100px;right:-80px;background:rgba(120,60,255,.08);animation-delay:-6s;animation-duration:18s; }
-        @keyframes gz-drift { 0%{transform:translate(0,0)} 100%{transform:translate(35px,-28px)} }
+        .gz-o1 { width:600px;height:600px;top:-150px;left:-120px;background:rgba(57,255,20,.13); }
+        .gz-o2 { width:500px;height:500px;bottom:-120px;right:-100px;background:rgba(110,40,255,.11);animation-delay:-6s;animation-duration:18s; }
+        .gz-o3 { width:300px;height:300px;top:40%;left:55%;background:rgba(57,255,20,.06);animation-delay:-10s;animation-duration:22s; }
+        @keyframes gz-drift { 0%{transform:translate(0,0) scale(1)} 100%{transform:translate(40px,-32px) scale(1.08)} }
 
         /* grid floor */
         .gz-grid {
-          position: fixed; bottom: 0; left: 0; right: 0; height: 38%;
+          position: fixed; bottom: 0; left: 0; right: 0; height: 45%;
           background:
-            repeating-linear-gradient(90deg,rgba(57,255,20,.045) 0,rgba(57,255,20,.045) 1px,transparent 1px,transparent 70px),
-            repeating-linear-gradient(0deg,rgba(57,255,20,.045) 0,rgba(57,255,20,.045) 1px,transparent 1px,transparent 70px);
-          transform: perspective(500px) rotateX(50deg);
+            repeating-linear-gradient(90deg,rgba(57,255,20,.07) 0,rgba(57,255,20,.07) 1px,transparent 1px,transparent 65px),
+            repeating-linear-gradient(0deg,rgba(57,255,20,.07) 0,rgba(57,255,20,.07) 1px,transparent 1px,transparent 65px);
+          transform: perspective(450px) rotateX(52deg);
           transform-origin: bottom center;
-          -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%);
-          mask-image: linear-gradient(to top, black 0%, transparent 100%);
+          -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,.7) 0%, transparent 100%);
+          mask-image: linear-gradient(to top, rgba(0,0,0,.7) 0%, transparent 100%);
           pointer-events: none; z-index: 0;
+        }
+
+        /* scanlines */
+        .gz-scan {
+          position: fixed; inset: 0; z-index: 0; pointer-events: none;
+          background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.03) 2px, rgba(0,0,0,.03) 4px);
         }
 
         /* canvas */
@@ -248,10 +267,13 @@ export default function LoginPage() {
         .gz-spin { width:14px;height:14px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;display:inline-block;animation:gz-spin .7s linear infinite; }
       `}</style>
 
+      <div className="gz-bg-base" />
       <canvas ref={canvasRef} className="gz-canvas" />
       <div className="gz-orb gz-o1" />
       <div className="gz-orb gz-o2" />
+      <div className="gz-orb gz-o3" />
       <div className="gz-grid" />
+      <div className="gz-scan" />
 
       <div className="gz-root">
         <div className="gz-card">
